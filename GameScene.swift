@@ -52,10 +52,45 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         setupCloud()
         setupWall()
         setupBird()
+        setupApple()
         
         setupScoreLabel()
     }
     
+    
+    func setupApple() {
+        let appleTexture = SKTexture(imageNamed: "apple")
+        appleTexture.filteringMode = .linear
+        
+        //移動する距離を計算
+        let movingDistance = CGFloat(self.frame.size.width + appleTexture.size().width)
+        
+        //画面外まで移動するアクション
+        let moveApple = SKAction.moveBy(x: -movingDistance, y: 0, duration: 4)
+        
+        //自身を取り除くアクション
+        let removeApple = SKAction.removeFromParent()
+        
+        //2つのアニメーションを順に実行するアクション
+        let appleAnimation = SKAction.sequence([moveApple, removeApple])
+        
+        //生成アクションの作成
+        let createAppleAnimation = SKAction.run( {
+            let apple = SKNode()
+            let randome_y = CGFloat.random (in: 0..<self.frame.size.height)
+            
+            apple.position = CGPoint(x: self.frame.size.width + appleTexture.size().width / 2, y: randome_y)
+            apple.zPosition = -80
+            
+            self.run(appleAnimation)
+        })
+
+        let waitAnimation = SKAction.wait(forDuration: 3.1)
+        
+        let repeatForeverAnimation = SKAction.repeatForever(SKAction.sequence([createAppleAnimation, waitAnimation]))
+        
+        self.run(repeatForeverAnimation)
+    }
 
     func setupGround() {
         //地面の画像を読み込む
