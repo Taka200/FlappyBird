@@ -4,7 +4,9 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
 
     var scrollNode: SKNode!
     var wallNode: SKNode!
-    var bird:SKSpriteNode!
+    var itemNode: SKSpriteNode!
+    var bird: SKSpriteNode!
+    var apple: SKSpriteNode!
     
     //衝突判定カテゴリー
     let birdCategory: UInt32 = 1 << 0
@@ -47,6 +49,8 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         wallNode = SKNode()
         scrollNode.addChild(wallNode)
         
+        itemNode = SKSpriteNode()
+        
         //雲、地面など各種スプライトを生成する処理をメソッドに分割
         setupGround()
         setupCloud()
@@ -59,6 +63,7 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
     
     
     func setupApple() {
+     
         let appleTexture = SKTexture(imageNamed: "apple")
         appleTexture.filteringMode = .linear
         
@@ -76,13 +81,14 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         
         //生成アクションの作成
         let createAppleAnimation = SKAction.run( {
-            let apple = SKNode()
+            let apple = SKSpriteNode(texture: appleTexture)
             let randome_y = CGFloat.random (in: 0..<self.frame.size.height)
             
             apple.position = CGPoint(x: self.frame.size.width + appleTexture.size().width / 2, y: randome_y)
             apple.zPosition = -80
             
-            self.run(appleAnimation)
+            apple.run(appleAnimation)
+            self.itemNode.addChild(apple)
         })
 
         let waitAnimation = SKAction.wait(forDuration: 3.1)
@@ -90,7 +96,10 @@ class GameScene: SKScene, SKPhysicsContactDelegate {
         let repeatForeverAnimation = SKAction.repeatForever(SKAction.sequence([createAppleAnimation, waitAnimation]))
         
         self.run(repeatForeverAnimation)
+        
     }
+    
+    
 
     func setupGround() {
         //地面の画像を読み込む
